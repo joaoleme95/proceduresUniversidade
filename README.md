@@ -1,3 +1,6 @@
+![Print Modelo Logico](ModeloLogico.png)
+
+
 # Esquema de Banco de Dados - Exercício
 
 ## Tabelas
