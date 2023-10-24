@@ -1,0 +1,124 @@
+CREATE TABLE Aluno (
+    RA_ALU NUMBER PRIMARY KEY,
+    Nome VARCHAR2(50),
+    Sobrenome VARCHAR2(50),
+    Email VARCHAR2(100),
+    IdCurso NUMBER,
+    DtNascimento DATE
+);
+
+INSERT INTO Aluno (RA_ALU, Nome, Sobrenome, Email, IdCurso, DtNascimento)
+VALUES (1111, 'Cleber', 'Silva', 'cleber@facens.com', 1, TO_DATE('2003-03-19', 'YYYY-MM-DD'));
+
+INSERT INTO Aluno (RA_ALU, Nome, Sobrenome, Email, IdCurso, DtNascimento)
+VALUES (2222, 'Jose', 'Sandro', 'jose@facens.com', 1, TO_DATE('1999-08-19', 'YYYY-MM-DD'));
+
+INSERT INTO Aluno (RA_ALU, Nome, Sobrenome, Email, IdCurso, DtNascimento)
+VALUES (3333, 'Joao', 'Leme', 'joao@facens.com', 1, TO_DATE('2003-08-19', 'YYYY-MM-DD'));
+
+INSERT INTO Aluno (RA_ALU, Nome, Sobrenome, Email, IdCurso, DtNascimento)
+VALUES (4444, 'Pedro', 'Nerd', 'pedro@facens.com', 1, TO_DATE('2004-03-04', 'YYYY-MM-DD'));
+
+INSERT INTO Aluno (RA_ALU, Nome, Sobrenome, Email, IdCurso, DtNascimento)
+VALUES (5555, 'Julia', 'Silva', 'julia@facens.com', 1, TO_DATE('2005-03-24', 'YYYY-MM-DD'));
+
+
+
+COMMIT;
+
+
+
+CREATE TABLE Curso (
+    ID NUMBER PRIMARY KEY,
+    Nome VARCHAR2(100),
+    Area VARCHAR2(50),
+    Desc CLOB
+);
+
+INSERT INTO Curso (ID, Nome, Area, Desc)
+VALUES (1111, 'Engenharia', 'Exatas', 'Curso de graduação em Engenharias');
+
+INSERT INTO Curso (ID, Nome, Area, Desc)
+VALUES (2222, 'Ads', 'Exatas', 'Curso de tecnologia');
+
+INSERT INTO Curso (ID, Nome, Area, Desc)
+VALUES (3333, 'Psicologia', 'Humanas', 'Bacharelado em psicologia');
+
+INSERT INTO Curso (ID, Nome, Area, Desc)
+VALUES (4444, 'Letras', 'Humanas', 'Curso de Licenciatura em letras');
+
+INSERT INTO Curso (ID, Nome, Area, Desc)
+VALUES (5555, 'Jornalismo', 'Humanas', 'Bacharelado em Jornalismo');
+
+commit;
+
+
+CREATE TABLE Professor (
+    RA_PROF NUMBER PRIMARY KEY,
+    Nome VARCHAR2(50),
+    Sobrenome VARCHAR2(50),
+    Email VARCHAR2(100),
+    Curso VARCHAR2(50),
+
+);
+
+INSERT INTO Professor (RA_PROF, Nome, Sobrenome, Email, Curso)
+VALUES (1111, 'João', 'Leme', 'joao@gmail.com', 'Engenharia');
+
+INSERT INTO Professor (RA_PROF, Nome, Sobrenome, Email, Curso)
+VALUES (2222, 'Sandro', 'Pedro', 'sandro@gmail.com', 'Ads');
+
+INSERT INTO Professor (RA_PROF, Nome, Sobrenome, Email, Curso)
+VALUES (3333, 'Paulo', 'Silva', 'paulo@gmail.com', 'Psicologia');
+
+INSERT INTO Professor (RA_PROF, Nome, Sobrenome, Email, Curso)
+VALUES (4444, 'Julia', 'Cabral', 'julia@gmail.com', 'Letras');
+
+INSERT INTO Professor (RA_PROF, Nome, Sobrenome, Email, Curso)
+VALUES (5555, 'Lara', 'Silva', 'lara@gmail.com', 'Jornalismoz');
+
+
+
+Commit;
+
+
+-- Cria a tabela de relação entre Professores e Alunos (Muitos para Muitos)
+CREATE TABLE Professor_Aluno (
+    RA_PROF NUMBER,
+    RA_ALU NUMBER
+);
+
+
+-- Trigger para gerar emails únicos
+CREATE OR REPLACE TRIGGER GerarEmailUnico
+BEFORE INSERT ON Aluno
+FOR EACH ROW
+BEGIN
+    DECLARE
+        baseEmail VARCHAR2(100);
+        cnt NUMBER;
+    BEGIN
+        baseEmail := :NEW.Nome || '.' || :NEW.Sobrenome || '@facens.com';
+        SELECT COUNT(*) INTO cnt FROM Aluno WHERE Email = baseEmail;
+        IF cnt > 0 THEN
+            :NEW.Email := baseEmail || cnt;
+        ELSE
+            :NEW.Email := baseEmail;
+        END IF;
+    END;
+END;
+/
+
+-- Stored Procedure para inserir um curso
+CREATE OR REPLACE PROCEDURE InserirCurso(
+    p_ID NUMBER,
+    p_Nome VARCHAR2,
+    p_Area VARCHAR2,
+    p_Desc CLOB
+) AS
+BEGIN
+    INSERT INTO Curso (ID, Nome, Area, Desc)
+    VALUES (p_ID, p_NomeCurso, p_Area, p_Desc);
+    COMMIT;
+END InserirCurso;
+/
